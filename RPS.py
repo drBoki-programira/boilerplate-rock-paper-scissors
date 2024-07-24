@@ -2,26 +2,32 @@
 import pandas as pd
 import numpy as np
 
-q_table = pd.DataFrame(np.zeros((9, 3)), columns=['R', 'P', 'S'], 
-                        index=['RR', 'RP', 'RS', 'PR', 'PP', 'PS', 'SR', 'SP', 'SS'])
+index = []
+for a in ['R', 'P', 'S']:
+    for b in ['R', 'P', 'S']:
+        for c in ['R', 'P', 'S']:
+            index.append(a + b + c)
+
+q_table = pd.DataFrame(np.zeros((len(index), 3)), columns=['R', 'P', 'S'], index=index)
 
 def player(prev_play, opponent_history=[], q_table=q_table, actions=[], n=[0]):
     opponent_history.append(prev_play)
     n[0] += 1
 
-    if not all(opponent_history[-3:]):
-        actions.append('R')
-        return 'R'
+    if not all(opponent_history[-4:]):
+        first_few = q_table.columns[np.random.randint(3)]
+        actions.append(first_few)
+        return first_few
 
-    learning_rate = 0.75
-    gamma = 0.25
+    learning_rate = 0.45
+    gamma = 0.55
     max_e = 1.0
-    min_e = 0.05
-    decay_rate = 0.1
+    min_e = 0.1
+    decay_rate = 0.3
     epsilon = min_e + (max_e - min_e) * np.exp(-decay_rate * n[0])
     
-    state = ''.join(opponent_history[-3:-1])
-    next_state = ''.join(opponent_history[-2:])
+    state = ''.join(opponent_history[-4:-1])
+    next_state = ''.join(opponent_history[-3:])
     action = actions[-1]
     if action == next_state[-1]:
         reward = 0
