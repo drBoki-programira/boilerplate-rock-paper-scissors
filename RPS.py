@@ -17,13 +17,15 @@ def player(prev_play, opponent_history=[], q_table=q_table, actions=[], n=[0]):
     if not all(opponent_history[-4:]):
         first_few = q_table.columns[np.random.randint(3)]
         actions.append(first_few)
+        for col in q_table.columns:
+            q_table[col] = 0.0
         return first_few
 
-    learning_rate = 0.45
-    gamma = 0.55
+    learning_rate = 0.4
+    gamma = 0.97
     max_e = 1.0
-    min_e = 0.1
-    decay_rate = 0.3
+    min_e = 0.02
+    decay_rate = 0.008
     epsilon = min_e + (max_e - min_e) * np.exp(-decay_rate * n[0])
     
     state = ''.join(opponent_history[-4:-1])
